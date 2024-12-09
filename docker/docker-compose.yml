@@ -15,7 +15,7 @@ services:
     user: dev
     volumes:
       - ..:/workspace
-      - ~/.ssh:/root/.ssh
+      - ~/.ssh:/home/dev/.ssh
     networks:
       - ros2-network
 
