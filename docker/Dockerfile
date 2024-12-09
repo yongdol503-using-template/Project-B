@@ -19,7 +19,9 @@ RUN apt-get update; \
                 -y; \
     rm -rf /var/lib/apt/lists/*
 
-RUN adduser dev
+RUN adduser dev --disabled-password --gecos ""
+RUN usermod -aG sudo dev
+RUN passwd -d dev
 
 RUN mkdir /workspace
 
