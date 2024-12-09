@@ -12,8 +12,10 @@ services:
         /bin/bash
     tty: true
     stdin_open: true
+    user: dev
     volumes:
       - ..:/workspace
+      - ~/.ssh:/home/dev/.ssh
     networks:
       - ros2-network
 
