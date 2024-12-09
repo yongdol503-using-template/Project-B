@@ -12,6 +12,7 @@ services:
         /bin/bash
     tty: true
     stdin_open: true
+    user: dev
     volumes:
       - ..:/workspace
       - ~/.ssh:/root/.ssh

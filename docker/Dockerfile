@@ -19,6 +19,8 @@ RUN apt-get update; \
                 -y; \
     rm -rf /var/lib/apt/lists/*
 
+RUN adduser dev
+
 RUN mkdir /workspace
 
 WORKDIR /workspace
