@@ -14,6 +14,7 @@ services:
     stdin_open: true
     volumes:
       - ..:/workspace
+      - ~/.ssh:/root/.ssh
     networks:
       - ros2-network
 
