@@ -1,0 +1,23 @@
+mode: auto
+silent: false
+branchName: full
+gitSafeReplacementChar: "-"
+autoLinkIssue: true
+autoCloseIssue: true
+autoDeleteBranch: true
+defaultBranch: develop
+openPR: true
+copyIssueDescriptionToPR: true
+copyIssueLabelsToPR: true
+copyIssueAssigneeToPR: true
+branches:
+  - label: bug
+    prefix: bugfix/
+    prTarget: develop
+    skip: false
+  - label: enhancement
+    prefix: feature/
+    prTarget: develop
+    skip: false
+  - label: '*'
+    skip: true
