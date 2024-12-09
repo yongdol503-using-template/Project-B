@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  calculator-dev:
+    build:
+      context: .
+    privileged: true
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        ./scripts/entrypoint.sh
+        /bin/bash
+    tty: true
+    stdin_open: true
+    volumes:
+      - ..:/workspace
+    networks:
+      - ros2-network
+
+networks:
+  ros2-network:
+    driver: bridge
