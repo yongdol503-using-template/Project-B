@@ -10,11 +10,16 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-add_executable(calculator_node src/calculator.cpp)
-target_include_directories(calculator_node PUBLIC
+add_library(calculator_lib SHARED
+  src/calculator.cpp
+)
+target_include_directories(calculator_lib PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-ament_target_dependencies(calculator_node rclcpp std_msgs)
+ament_target_dependencies(calculator_lib PUBLIC rclcpp std_msgs)
+
+add_executable(calculator_node src/main.cpp)
+target_link_libraries(calculator_node calculator_lib)
 
 install(TARGETS
   calculator_node
@@ -22,15 +27,20 @@ install(TARGETS
 )
 
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
+  message("Building tests.")
+  find_package(ament_cmake_gtest REQUIRED)
+
+  file(GLOB_RECURSE TEST_SOURCE_FILES test/*.cpp)
+  ament_add_gtest(test_calculator 
+    ${TEST_SOURCE_FILES}
+  )
+  target_link_libraries(test_calculator calculator_lib)
+  ament_target_dependencies(test_calculator rclcpp std_msgs)
+
+  # find_package(ament_lint_auto REQUIRED)
+  # set(ament_cmake_copyright_FOUND TRUE)
+  # set(ament_cmake_cpplint_FOUND TRUE)
+  # ament_lint_auto_find_test_dependencies()
 endif()
 
 ament_package()
