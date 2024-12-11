@@ -1,0 +1,20 @@
+name: PR based CI Action
+
+on:
+  pull_request:
+    types: [synchronize]
+    branches:
+      - develop
+
+jobs:
+  create_branch_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.2.2
+    
+    - name: unit_test
+      run: |
+        ls -al
+        pwd
