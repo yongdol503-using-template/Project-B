@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  calculator-dev:
+  dev:
     build:
       context: .
     privileged: true
@@ -12,10 +12,25 @@ services:
         /bin/bash
     tty: true
     stdin_open: true
+    user: dev
     volumes:
       - ..:/workspace
+      - ~/.ssh:/home/dev/.ssh
     networks:
       - ros2-network
+
+  ci:
+    build:
+      context: .
+    privileged: true
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        ./scripts/ci.sh
+    tty: true
+    stdin_open: true
+    volumes:
+      - ..:/workspace
 
 networks:
   ros2-network:

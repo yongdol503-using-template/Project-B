@@ -1,0 +1,21 @@
+name: PR based CI Action
+
+on:
+  pull_request:
+    types: [synchronize]
+    branches:
+      - develop
+
+jobs:
+  ci_workflow:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.2.2
+    
+    - name: unit_test
+      run: |
+        cd docker
+        docker compose build
+        docker compose up ci
