@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  create_branch_pr:
+  ci_workflow:
     runs-on: ubuntu-latest
 
     steps:
