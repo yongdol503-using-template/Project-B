@@ -16,6 +16,6 @@ jobs:
     
     - name: unit_test
       run: |
-        cd script
+        cd docker
         docker compose build
         docker compose up ci
