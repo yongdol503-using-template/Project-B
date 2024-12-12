@@ -10,7 +10,9 @@ on:
 jobs:
   tag_workflow:
     runs-on: ubuntu-latest
-
+    env:
+      TAG: none
+    
     steps:
     - name: checkout
       uses: actions/checkout@v4.2.2
@@ -18,29 +20,27 @@ jobs:
     - name: patch_tagging
       if: github.event.pull_request.labels[0].name == 'bug' && github.event.pull_request.merged == true
       run: |
-        export CURRENT_TAG=$(cat VERSION | awk -F. '{$2 = $2 + 1;} 1' | sed 's/ /./g')
+        export CURRENT_TAG=$(cat VERSION | awk -F. '{$3 = $3 + 1;} 1' | sed 's/ /./g')
         echo $CURRENT_TAG > VERSION
+        echo "TAG=${CURRENT}" >> $GITHUB_ENV
 
     - name: minor_tagging
       if: github.event.pull_request.labels[0].name == 'enhancement' && github.event.pull_request.merged == true
       run: |
         export CURRENT_TAG=$(cat VERSION | awk -F. '{$2 = $2 + 1;} 1' | sed 's/ /./g')
         echo $CURRENT_TAG > VERSION
+        echo "TAG=${CURRENT}" >> $GITHUB_ENV
 
     - name: major_tagging
       if: github.event.pull_request.base.ref == 'release' && github.event.pull_request.merged == true
       run: |
         export CURRENT_TAG=$(cat VERSION | awk -F. '{$1 = $1 + 1;} 1' | sed 's/ /./g')
         echo $CURRENT_TAG > VERSION
+        echo "TAG=${CURRENT}" >> $GITHUB_ENV
 
     - name: push_tag_and_release
+      if: ${{env.TAG != 'none'}}
       run: |
-        if [ -z "$CURRENT_TAG" ]; then
-          echo "$CURRENT_TAG"
-          echo "No version bump required"
-          exit 0
-        fi
-        echo "${{toJson(github)}}"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add VERSION
