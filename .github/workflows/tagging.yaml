@@ -46,6 +46,7 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git add VERSION
         git commit -m "Bump version to $TAG"
+        git push origin
         git tag $TAG
         git push --tags origin
         gh release create $TAG -t $TAG -n "Release $TAG"
