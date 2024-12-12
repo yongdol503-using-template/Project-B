@@ -44,9 +44,9 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add VERSION
-        git commit -m "Bump version to $CURRENT_TAG"
-        git tag $CURRENT_TAG
-        git push origin $CURRENT_TAG
-        gh release create $CURRENT_TAG -t $CURRENT_TAG -n "Release $CURRENT_TAG"
+        git commit -m "Bump version to $TAG"
+        git tag $TAG
+        git push origin $TAG
+        gh release create $TAG -t $TAG -n "Release $TAG"
       env:
         GH_TOKEN: ${{ secrets.PAT }}
