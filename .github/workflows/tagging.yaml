@@ -1,0 +1,55 @@
+name: Tagging Automation
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+      - release
+
+jobs:
+  tag_workflow:
+    runs-on: ubuntu-latest
+    env:
+      TAG: none
+    
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.2.2
+
+    - name: patch_tagging
+      if: github.event.pull_request.labels[0].name == 'bug' && github.event.pull_request.merged == true
+      run: |
+        export CURRENT_TAG=$(cat VERSION | awk -F. '{$3 = $3 + 1;} 1' | sed 's/ /./g')
+        echo $CURRENT_TAG > VERSION
+        echo "TAG=${CURRENT_TAG}" >> $GITHUB_ENV
+
+    - name: minor_tagging
+      if: github.event.pull_request.labels[0].name == 'enhancement' && github.event.pull_request.merged == true
+      run: |
+        export CURRENT_TAG=$(cat VERSION | awk -F. '{$2 = $2 + 1; $3 = 0;} 1' | sed 's/ /./g')
+        echo $CURRENT_TAG > VERSION
+        echo "TAG=${CURRENT_TAG}" >> $GITHUB_ENV
+
+    - name: major_tagging
+      if: github.event.pull_request.base.ref == 'release' && github.event.pull_request.merged == true
+      run: |
+        export CURRENT_TAG=$(cat VERSION | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0;} 1' | sed 's/ /./g')
+        echo $CURRENT_TAG > VERSION
+        echo "TAG=${CURRENT_TAG}" >> $GITHUB_ENV
+
+    - name: push_tag_and_release
+      if: ${{env.TAG != 'none'}}
+      run: |
+        echo "$TAG"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add VERSION
+        git commit -m "Bump version to $TAG"
+        git push origin
+        git tag $TAG
+        git push --tags origin
+        gh release create $TAG -t $TAG -n "Release $TAG"
+        gh release upload $TAG README.md
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
