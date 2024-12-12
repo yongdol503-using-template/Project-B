@@ -29,6 +29,7 @@ jobs:
 
     - name: push_tag
       run: |
+        echo "${{toJson(github)}}"
         echo "Target branch: ${{ github.event.pull_request.target.branch }}"
         echo "Merged: ${{ github.event.pull_request.merged }}"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
