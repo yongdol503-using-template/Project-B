@@ -49,5 +49,6 @@ jobs:
         git tag $TAG
         git push origin $TAG
         gh release create $TAG -t $TAG -n "Release $TAG"
+        gh release upload $TAG README.md
       env:
         GH_TOKEN: ${{ secrets.PAT }}
