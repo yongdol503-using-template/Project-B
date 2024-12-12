@@ -1,0 +1,44 @@
+name: Tagging Automation
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+      - release
+
+jobs:
+  tag_workflow:
+    runs-on: ubuntu-latest
+
+    - name: checkout
+      uses: actions/checkout@v4.2.2
+
+    - name: minor_tagging
+      if: github.event.pull_request.target.branch == 'develop' && github.event.pull_request.merged == true
+      run: |
+        export CURRENT_TAG=$(cat VERSION | awk -F. '{$2 = $2 + 1;} 1' | sed 's/ /./g')
+        echo $CURRENT_TAG > VERSION
+
+    - name: major_tagging
+      if: github.event.pull_request.target.branch == 'release' && github.event.pull_request.merged == true
+      run: |
+        export CURRENT_TAG=$(cat VERSION | awk -F. '{$1 = $1 + 1;} 1' | sed 's/ /./g')
+        echo $CURRENT_TAG > VERSION
+
+    - name: push_tag
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add VERSION
+        git commit -m "Bump version to $CURRENT_TAG"
+        git tag $CURRENT_TAG
+        git push origin $CURRENT_TAG
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+
+    - name: create_release
+      run: |
+        gh release create $CURRENT_TAG -t $CURRENT_TAG -n "Release $CURRENT_TAG"
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
